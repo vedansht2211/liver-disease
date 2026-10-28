@@ -1,0 +1,4 @@
+.venv/
+mlopsca/
+__pycache__
+.env

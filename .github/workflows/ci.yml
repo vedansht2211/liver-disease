@@ -1,0 +1,51 @@
+name : Liver Disease - CI Pipeline - CSE
+
+# define when Github should run this workflow
+
+on:
+# run whenever code is pushed to main branch
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+# permissions are restricted to read repo content
+permissions:
+  contents: read
+
+# define the jobs that make up the pipeline
+jobs:
+  test-and-build:
+    # Github repo provides a fresh Ubuntu venv for this job
+    runs-on: ubuntu-latest
+  
+    steps:
+      # step 1 : Download the repo content to the runner
+      - name: check out repository
+        uses: actions/checkout@v4
+
+      # step2 : Install python on the runner
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+        
+      # step3 : Install python dependencies
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      #step4 : Execute the automated tests
+      - name: Run automated tests
+        run: python -m pytest -v
+      
+      #step5 : build docker image
+      - name: Build Docker image
+        run: docker build -t liver-disease-ml-api:${{ github.sha }} .
+
+
+
+
